@@ -84,9 +84,8 @@ const enableAddClientButton = (qualifiedName, value) =>{
         addClientButton.classList.add('opacity-50')
     }
 }
-// Function to add a new client to IndexedDB
 const addClientToDB = (clientObj) => {
-    const request = window.indexedDB.open("ClientDB", 1)
+    const request = window.indexedDB.open("ClientDB")
 
     request.onupgradeneeded = (e) => {
         const db = e.target.result

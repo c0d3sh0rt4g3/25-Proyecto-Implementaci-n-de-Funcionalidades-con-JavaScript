@@ -34,6 +34,15 @@ const insertClientsIntoPage = (clients) => {
         nameCell.textContent = client.nombre
         phoneCell.textContent = client.telefono
         enterpriseCell.textContent = client.empresa
+
+        const deleteButton = document.createElement('button')
+
+        deleteButton.textContent = 'borrar cliente'
+        deleteButton.classList.add("delete-button", "bg-red-500", "hover:bg-red-600", "font-bold","px-2", "rounded-full")
+        deleteButton.addEventListener('click', () => {
+            newRow.remove()
+        })
+        actionsCell.appendChild(deleteButton)
     })
 }
 document.addEventListener("DOMContentLoaded", showAllClientsFromDB)
