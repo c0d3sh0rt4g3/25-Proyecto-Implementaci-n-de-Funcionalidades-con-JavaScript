@@ -9,6 +9,7 @@ const clientObj ={
     telefono: "",
     empresa: ""
 }
+
 const validate = (e) =>{
     if (e.target.id === "email"){
         if (!validateEmail(e.target.value)){
@@ -42,6 +43,7 @@ phoneTextBox.addEventListener("blur", validate)
 enterpriseTextBox.addEventListener("blur", validate)
 addClientButton.addEventListener("click" , (e) =>{
     e.preventDefault()
+    addClientToDB(clientObj)
 })
 const validateEmail = (emailToValidate) =>{
     const emailRegex = /^[a-z0-9]+@[a-z]+\.[a-z]{2,3}$/
@@ -80,5 +82,39 @@ const enableAddClientButton = (qualifiedName, value) =>{
     }else {
         addClientButton.setAttribute("disabled", value)
         addClientButton.classList.add('opacity-50')
+    }
+}
+// Function to add a new client to IndexedDB
+const addClientToDB = (clientObj) => {
+    const request = window.indexedDB.open("ClientDB", 1)
+
+    request.onupgradeneeded = (e) => {
+        const db = e.target.result
+        const objectStore = db.createObjectStore("clients", { keyPath: "id", autoIncrement: true })
+        objectStore.createIndex("nombre", "nombre", { unique: false })
+        objectStore.createIndex("email", "email", { unique: true })
+        objectStore.createIndex("telefono", "telefono", { unique: false })
+        objectStore.createIndex("empresa", "empresa", { unique: false })
+    }
+
+    request.onsuccess = (e) => {
+        const db = e.target.result
+        const transaction = db.transaction("clients", "readwrite")
+        const objectStore = transaction.objectStore("clients")
+
+        // Add the client object to the database
+        const addRequest = objectStore.add(clientObj)
+
+        addRequest.onsuccess = function () {
+            console.log("Client added to the database")
+        }
+
+        addRequest.onerror = function (error) {
+            console.error("Error adding client: ", error)
+        }
+    }
+
+    request.onerror = function (error) {
+        console.error("Error opening database: ", error)
     }
 }
