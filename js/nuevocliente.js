@@ -104,16 +104,16 @@ const addClientToDB = (clientObj) => {
         // Add the client object to the database
         const addRequest = objectStore.add(clientObj)
 
-        addRequest.onsuccess = function () {
+        addRequest.onsuccess = () => {
             console.log("Client added to the database")
         }
 
-        addRequest.onerror = function (error) {
+        addRequest.onerror =  (error) => {
             console.error("Error adding client: ", error)
         }
     }
 
-    request.onerror = function (error) {
+    request.onerror = (error) => {
         console.error("Error opening database: ", error)
     }
 }
