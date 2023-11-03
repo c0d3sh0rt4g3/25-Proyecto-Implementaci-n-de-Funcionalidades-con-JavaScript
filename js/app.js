@@ -53,7 +53,7 @@ const insertClientsIntoPage = (clients) => {
         deleteButton.addEventListener("click", () => {
             newRow.remove()
             const dbName = "ClientDB"
-            const request = window.indexedDB.open(dbName, 1)
+            const request = indexedDB.open(dbName, 1)
 
             request.onsuccess = (e) => {
                 const db = e.target.result

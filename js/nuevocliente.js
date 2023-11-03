@@ -85,7 +85,7 @@ const enableAddClientButton = (qualifiedName, value) =>{
     }
 }
 const addClientToDB = (clientObj) => {
-    const request = window.indexedDB.open("ClientDB")
+    const request = indexedDB.open("ClientDB")
 
     request.onupgradeneeded = (e) => {
         const db = e.target.result
@@ -101,7 +101,6 @@ const addClientToDB = (clientObj) => {
         const transaction = db.transaction("clients", "readwrite")
         const objectStore = transaction.objectStore("clients")
 
-        // Add the client object to the database
         const addRequest = objectStore.add(clientObj)
 
         addRequest.onsuccess = () => {
