@@ -3,6 +3,15 @@ const showAllClientsFromDB = () => {
     const dbName = "ClientDB"
     const request = window.indexedDB.open(dbName, 1)
 
+    request.onupgradeneeded = (e) => {
+        const db = e.target.result
+        const objectStore = db.createObjectStore("clients", { keyPath: "id", autoIncrement: true })
+        objectStore.createIndex("nombre", "nombre", { unique: false })
+        objectStore.createIndex("email", "email", { unique: true })
+        objectStore.createIndex("telefono", "telefono", { unique: false })
+        objectStore.createIndex("empresa", "empresa", { unique: false })
+    }
+
     request.onsuccess = (e) => {
         const db = e.target.result
         const transaction = db.transaction("clients", "readonly")
@@ -44,7 +53,7 @@ const insertClientsIntoPage = (clients) => {
 
         const editButton = document.createElement("button")
         editButton.textContent = "editar cliente"
-        editButton.classList.add("delete-button", "bg-green-500", "hover:bg-green-500", "font-bold","px-2", "rounded-full")
+        editButton.classList.add("edit-button", "bg-green-500", "hover:bg-green-500", "font-bold","px-2", "rounded-full")
         editClientLink.appendChild(editButton)
         editButton.addEventListener("click", () =>{
             localStorage.setItem("clientToEditId", client.id)
@@ -52,26 +61,33 @@ const insertClientsIntoPage = (clients) => {
 
         deleteButton.addEventListener("click", () => {
             newRow.remove()
-            const dbName = "ClientDB"
-            const request = indexedDB.open(dbName, 1)
-
-            request.onsuccess = (e) => {
-                const db = e.target.result
-                const transaction = db.transaction("clients", "readwrite")
-                const objectStore = transaction.objectStore("clients")
-                const deleteRequest = objectStore.delete(client.id)
-                deleteRequest.onsuccess = () => {
-                    console.log("Cliente eliminado de IndexedDB")
-                }
-
-                deleteRequest.onerror = (error) => {
-                    console.error("Error al borrar el cliente de IndexedDB:", error)
-                }
-            }
+            deleteClientFromDB(client.id)
         })
 
         actionsCell.appendChild(deleteButton)
         actionsCell.appendChild(editClientLink)
     })
+}
+
+const deleteClientFromDB = (clientId) => {
+    const dbName = "ClientDB"
+    const request = indexedDB.open(dbName, 1)
+
+    request.onsuccess = (e) => {
+        const db = e.target.result
+        const transaction = db.transaction("clients", "readwrite")
+        const objectStore = transaction.objectStore("clients")
+        const deleteRequest = objectStore.delete(clientId)
+        deleteRequest.onsuccess = () => {
+            console.log("Cliente eliminado de IndexedDB")
+        }
+
+        deleteRequest.onerror = (error) => {
+            console.error("Error al borrar el cliente de IndexedDB:", error)
+        }
+    }
+    request.onerror = (error) => {
+        console.error("Error opening database: ", error)
+    }
 }
 document.addEventListener("DOMContentLoaded", showAllClientsFromDB)

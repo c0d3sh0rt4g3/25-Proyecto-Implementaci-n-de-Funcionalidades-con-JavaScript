@@ -132,7 +132,7 @@ const updateClientData = () =>{
     const request = indexedDB.open('ClientDB')
 
     request.onerror = (e) => {
-        console.log("Database error: " + event.target.errorCode)
+        console.log("Database error: " + e.target.errorCode)
     }
 
     request.onsuccess = (e) => {
@@ -143,7 +143,7 @@ const updateClientData = () =>{
 
         const getRequest = objectStore.get(clientId)
 
-        getRequest.onsuccess = (e) => {
+        getRequest.onsuccess = () => {
             const result = getRequest.result
             result.nombre = clientObj.nombre
             result.email = clientObj.email
