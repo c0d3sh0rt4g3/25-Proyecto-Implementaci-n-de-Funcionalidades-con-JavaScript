@@ -1,7 +1,8 @@
 const clientsTable = document.querySelector("#listado-clientes")
-const showAllClientsFromDB = () => {
+
+const openDB = () =>{
     const dbName = "ClientDB"
-    const request = window.indexedDB.open(dbName, 1)
+    const request = window.indexedDB.open(dbName)
 
     request.onupgradeneeded = (e) => {
         const db = e.target.result
@@ -11,6 +12,11 @@ const showAllClientsFromDB = () => {
         objectStore.createIndex("telefono", "telefono", { unique: false })
         objectStore.createIndex("empresa", "empresa", { unique: false })
     }
+    return request
+}
+
+const showAllClientsFromDB = () => {
+    const request = openDB()
 
     request.onsuccess = (e) => {
         const db = e.target.result
@@ -70,9 +76,7 @@ const insertClientsIntoPage = (clients) => {
 }
 
 const deleteClientFromDB = (clientId) => {
-    const dbName = "ClientDB"
-    const request = indexedDB.open(dbName, 1)
-
+    const request = openDB()
     request.onsuccess = (e) => {
         const db = e.target.result
         const transaction = db.transaction("clients", "readwrite")
@@ -91,3 +95,5 @@ const deleteClientFromDB = (clientId) => {
     }
 }
 document.addEventListener("DOMContentLoaded", showAllClientsFromDB)
+
+export {openDB}

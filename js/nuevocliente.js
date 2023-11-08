@@ -1,3 +1,5 @@
+import {openDB} from "./app.js";
+
 const nameTextBox = document.querySelector("#nombre")
 const emailTextBox = document.querySelector("#email")
 const phoneTextBox = document.querySelector("#telefono")
@@ -11,6 +13,7 @@ const clientObj ={
 }
 
 const validate = (e) =>{
+    const buttonToEnable = document.querySelector(".mt-5")
     if (e.target.id === "email"){
         if (!validateEmail(e.target.value)){
             showError(`The email introduced it's not valid`, e.target.parentElement)
@@ -34,7 +37,7 @@ const validate = (e) =>{
         cleanseAlert(e.target.parentElement)
         clientObj[e.target.id] = e.target.value
     }
-    enableAddClientButton()
+    enableButton(buttonToEnable)
 }
 
 nameTextBox.addEventListener("blur", validate)
@@ -75,26 +78,17 @@ const cleanseAlert = (reference) =>{
         alert.remove()
     }
 }
-const enableAddClientButton = (qualifiedName, value) =>{
+const enableButton = (buttonToEnable, qualified, value) =>{
     if (clientObj.nombre !== "" && clientObj.email !== "" && clientObj.telefono !== "" && clientObj.empresa !== ""){
-        addClientButton.removeAttribute("disabled")
-        addClientButton.classList.remove('opacity-50')
+        buttonToEnable.removeAttribute("disabled")
+        buttonToEnable.classList.remove('opacity-50')
     }else {
-        addClientButton.setAttribute("disabled", value)
-        addClientButton.classList.add('opacity-50')
+        buttonToEnable.setAttribute("disabled", value)
+        buttonToEnable.classList.add('opacity-50')
     }
 }
 const addClientToDB = (clientObj) => {
-    const request = indexedDB.open("ClientDB")
-
-    request.onupgradeneeded = (e) => {
-        const db = e.target.result
-        const objectStore = db.createObjectStore("clients", { keyPath: "id", autoIncrement: true })
-        objectStore.createIndex("nombre", "nombre", { unique: false })
-        objectStore.createIndex("email", "email", { unique: true })
-        objectStore.createIndex("telefono", "telefono", { unique: false })
-        objectStore.createIndex("empresa", "empresa", { unique: false })
-    }
+    const request = openDB()
 
     request.onsuccess = (e) => {
         const db = e.target.result
@@ -116,3 +110,5 @@ const addClientToDB = (clientObj) => {
         console.error("Error opening database: ", error)
     }
 }
+
+export {validate}
